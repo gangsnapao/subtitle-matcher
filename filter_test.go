@@ -42,3 +42,23 @@ func TestIsMachineTitle(t *testing.T) {
 		}
 	}
 }
+
+func TestSearchCode(t *testing.T) {
+	cases := []struct{ in, want string }{
+		{"EBWH-090 響蓮", "EBWH-090"},
+		{"MIDA-726", "MIDA-726"},
+		{"CAWD-365 伊藤舞雪", "CAWD-365"},
+		{"259LUXU-1234", "259LUXU-1234"},
+		{"SSIS-469 小宵こなん", "SSIS-469"},
+		{"SNOS-115", "SNOS-115"},
+		{"IPX-697 相沢みなみ", "IPX-697"},
+		{"HEYZO-1234", "HEYZO-1234"},
+		{"MIDE-123-C", "MIDE-123"},
+		{"random.mp4", "random.mp4"}, // 不匹配番号则原样返回
+	}
+	for _, c := range cases {
+		if got := searchCode(c.in); got != c.want {
+			t.Errorf("searchCode(%q) = %q, want %q", c.in, got, c.want)
+		}
+	}
+}

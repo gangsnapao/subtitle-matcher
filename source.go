@@ -99,6 +99,19 @@ func normalizeCode(s string) string {
 	return strings.ToUpper(nonAlnumRe.ReplaceAllString(s, ""))
 }
 
+// searchCode 从视频文件名里提取纯番号用于站点搜索。
+// 文件名可能是「EBWH-090 響蓮」「MIDA-726」「259LUXU-1234」等，
+// 含中文标题等后缀。若不提取纯番号，subtitlecat 只会搜到含完整标题的个别候选，
+// 漏掉「EBWH-090」（下载最多）这类纯番号候选。
+// 提取成功返回纯番号（如 EBWH-090），否则原样返回传入值。
+func searchCode(code string) string {
+	m := codeRe.FindString(code)
+	if m != "" {
+		return m
+	}
+	return code
+}
+
 // ---------------------------------------------------------------- subtitlecat
 
 const subtitlecatBase = "https://www.subtitlecat.com/"
@@ -150,6 +163,7 @@ type subtitlecatSource struct{ h *httpGetter }
 func (s *subtitlecatSource) Name() string { return "SubtitleCat" }
 
 func (s *subtitlecatSource) Search(ctx context.Context, code string) ([]candidate, error) {
+	code = searchCode(code)
 	searchURL := subtitlecatBase + "index.php?search=" + url.QueryEscape(code)
 	body, err := s.h.Get(ctx, searchURL, subtitlecatBase, acceptHTML)
 	if err != nil {
@@ -191,6 +205,7 @@ func (s *subtitlecatSource) Search(ctx context.Context, code string) ([]candidat
 	if len(matched) > maxDetailFetches {
 		matched = matched[:maxDetailFetches]
 	}
+
 
 	var out []candidate
 	var haveSimp, haveTrad bool
@@ -319,6 +334,7 @@ type aiyi1Source struct{ h *httpGetter }
 func (s *aiyi1Source) Name() string { return "爱译网" }
 
 func (s *aiyi1Source) Search(ctx context.Context, code string) ([]candidate, error) {
+	code = searchCode(code)
 	searchURL := aiyi1Base + "?s=" + url.QueryEscape(code)
 	body, err := s.h.Get(ctx, searchURL, aiyi1Base, acceptHTML)
 	if err != nil {
@@ -453,6 +469,7 @@ type javzimuSource struct{ h *httpGetter }
 func (s *javzimuSource) Name() string { return "JAV字幕" }
 
 func (s *javzimuSource) Search(ctx context.Context, code string) ([]candidate, error) {
+	code = searchCode(code)
 	apiURL := javzimuBase + "api/search?name=" + url.QueryEscape(code)
 	body, err := s.h.Get(ctx, apiURL, javzimuBase, acceptJSON)
 	if err != nil {
