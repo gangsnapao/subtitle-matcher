@@ -1,0 +1,24 @@
+# 编译 / 测试临时产物
+*.test
+*.out
+*.log
+*.exe~
+*.bak
+
+# 调试用的控制台版不进仓库（发行版只放 GUI 版）
+SubtitleCatMatcher-cli.exe
+
+# 编辑器与系统文件
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 本改造版产物（不提交二进制）
+subtitle-matcher-linux-amd64
+subtitle-matcher-linux-amd64-new
+*.b64
+
+# Windows GUI 发行版（改造版不提交，如需请自行构建）
+SubtitleCatMatcher.exe
